@@ -1,0 +1,2 @@
+<#include "mcelements.ftl">
+(BuiltInRegistries.BLOCK.getTag(BlockTags.create(${toResourceLocation(input$tag)})).flatMap(t -> t.getRandomElement(RandomSource.create())).map(Holder::value).orElse(Blocks.AIR))

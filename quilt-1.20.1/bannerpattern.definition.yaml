@@ -1,0 +1,12 @@
+templates:
+  - template: bannerpattern/banner_pattern.json.ftl
+    writer: json
+    name: "@MODDATAROOT/banner_pattern/@registryname.json"
+global_templates:
+  - template: elementinits/banner_patterns.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/init/@JavaModNameBannerPatterns.java"
+  - template: bannerpattern/banner_pattern_tag.json.ftl
+    writer: json
+    condition: "${w.getGElementsOfType('bannerpattern')?filter(e -> !e.requireItem)?size != 0}"
+    name: "@RESROOT/data/minecraft/tags/banner_pattern/no_item_required.json"

@@ -1,0 +1,287 @@
+name: QuiltMC for @minecraft (@buildfileversion)
+status: stable
+buildfileversion: 0.92.2
+subversion: 1
+
+import:
+  - datapack-1.20.1
+  - forge-1.20.1:
+    exclude:
+      - procedures
+      - triggers
+
+# gradle task definitions
+gradle:
+  sync_task: classes
+  run_client: runClient
+  run_server: runServer
+  export_file: "build/libs/${modid}-1.0.jar"
+
+import_formatter:
+  duplicates_whitelist:
+    - java.util
+    - net.minecraft
+    - net.fabricmc
+  priority_imports:
+    ModInitializer: org.quiltmc.qsl.base.api.entrypoint
+    ClientModInitializer: org.quiltmc.qsl.base.api.entrypoint.client
+    ModContainer: org.quiltmc.loader.api
+    Environment: net.fabricmc.api
+    FabricLoader: net.fabricmc.loader.api
+    Nullable: javax.annotation
+    Codec: com.mojang.serialization
+    SoundEvent: net.minecraft.sounds
+    Blocks: net.minecraft.world.level.block
+    Items: net.minecraft.world.item
+    Multimap: com.google.common.collect
+    ImmutableSet: com.google.common.collect
+    Iterables: com.google.common.collect
+    Attributes: net.minecraft.world.entity.ai.attributes
+    Keyframe: net.minecraft.client.animation
+    Potion: net.minecraft.world.item.alchemy
+    MapColor: net.minecraft.world.level.material
+
+# base generator roots
+source_root: "@WORKSPACEROOT/src/main/java"
+res_root: "@WORKSPACEROOT/src/main/resources"
+mod_assets_root: "@RESROOT/assets/@modid"
+mod_data_root: "@RESROOT/data/@modid"
+
+# specific resource folders
+sounds_dir: "@MODASSETSROOT/sounds"
+structures_dir: "@MODDATAROOT/structures"
+block_textures_dir: "@MODASSETSROOT/textures/block"
+item_textures_dir: "@MODASSETSROOT/textures/item"
+entity_textures_dir: "@MODASSETSROOT/textures/entities"
+effect_textures_dir: "@MODASSETSROOT/textures/mob_effect"
+particle_textures_dir: "@MODASSETSROOT/textures/particle"
+screen_textures_dir: "@MODASSETSROOT/textures/screens"
+armor_textures_dir: "@MODASSETSROOT/textures/models/armor"
+other_textures_dir: "@MODASSETSROOT/textures"
+
+# vanilla resources
+vanilla_resources_jar: ".*-merged-.*.jar"
+vanilla_block_textures_dir: "assets/minecraft/textures/block"
+vanilla_item_textures_dir: "assets/minecraft/textures/item"
+
+base_templates:
+  - template: modbase/mod.java.ftl
+    name: "@SRCROOT/@BASEPACKAGEPATH/@JavaModName.java"
+  - template: modbase/mod_client.java.ftl
+    name: "@SRCROOT/@BASEPACKAGEPATH/@JavaModNameClient.java"
+  - template: modbase/quilt.mod.json.ftl
+    writer: json
+    name: "@RESROOT/quilt.mod.json"
+  - template: pack.mcmeta.ftl
+    writer: json
+    name: "@RESROOT/pack.mcmeta"
+  - template: modbase/sounds.json.ftl
+    writer: json
+    name: "@MODASSETSROOT/sounds.json"
+    condition: hasSounds()
+  - template: modbase/sounds.java.ftl
+    name: "@SRCROOT/@BASEPACKAGEPATH/init/@JavaModNameSounds.java"
+    condition: hasSounds()
+  - template: modbase/attributes.java.ftl
+    name: "@SRCROOT/@BASEPACKAGEPATH/init/@JavaModNameAttributes.java"
+  - template: modbase/variableslist.java.ftl
+    name: "@SRCROOT/@BASEPACKAGEPATH/network/@JavaModNameVariables.java"
+    condition: hasVariables()
+  - template: elementinits/tabs.java.ftl
+    name: "@SRCROOT/@BASEPACKAGEPATH/init/@JavaModNameTabs.java"
+    condition: hasItemsInTabs()
+  - template: modbase/accesswidener.ftl
+    usercodeComment: "#"
+    writer: file
+    name: "@RESROOT/@modid.accesswidener"
+  - template: elementinits/javamodels.java.ftl
+    name: "@SRCROOT/@BASEPACKAGEPATH/init/@JavaModNameModels.java"
+    condition: "${w.hasElementsOfType('specialentity')}"
+  - template: modbase/mixin.json.ftl
+    writer: json
+    name: "@RESROOT/@modid.mixins.json"
+  - template: elementinits/features.java.ftl
+    writer: java
+    condition_any:
+      - "${w.getGElementsOfType('block')?filter(e -> e.generateFeature)?size != 0}"
+      - "${w.getGElementsOfType('plant')?filter(e -> e.generateFeature)?size != 0}"
+      - "${w.hasElementsOfType('feature')}"
+    name: "@SRCROOT/@BASEPACKAGEPATH/init/@JavaModNameFeatures.java"
+  - template: elementinits/entityrenderers.java.ftl
+    name: "@SRCROOT/@BASEPACKAGEPATH/init/@JavaModNameEntityRenderers.java"
+  - template: elementinits/entities.java.ftl
+    name: "@SRCROOT/@BASEPACKAGEPATH/init/@JavaModNameEntities.java"
+    condition: "${w.hasElementsOfType('specialentity') || w.hasElementsOfType('livingentity') || w.hasElementsOfType('projectile')}"
+
+# ItemExtension
+  - template: elementinits/dispensebehaviors.java.ftl
+    name: "@SRCROOT/@BASEPACKAGEPATH/init/@JavaModNameDispenseBehaviors.java"
+    condition_any:
+      - "${w.getGElementsOfType('itemextension')?filter(e -> e.hasDispenseBehavior)?size != 0}"
+      - "${w.hasElementsOfType('specialentity')}"
+
+# Mixins
+  - template: mixin/livingentity_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/LivingEntityMixin.java"
+  - template: mixin/tamableanimal_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/TamableAnimalMixin.java"
+  - template: mixin/creeper_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/CreeperMixin.java"
+  - template: mixin/breakdoorgoal_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/BreakDoorGoalMixin.java"
+  - template: mixin/witherboss_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/WitherBossMixin.java"
+  - template: mixin/silverfish_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/SilverfishMixin.java"
+  - template: mixin/player_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/PlayerMixin.java"
+  - template: mixin/itemstack_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/ItemStackMixin.java"
+  - template: mixin/blockitem_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/BlockItemMixin.java"
+  - template: mixin/bonemealitem_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/BoneMealItemMixin.java"
+  - template: mixin/commands_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/CommandsMixin.java"
+  - template: mixin/experienceorb_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/ExperienceOrbMixin.java"
+  - template: mixin/level_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/LevelMixin.java"
+  - template: mixin/enderman_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/EnderManMixin.java"
+  - template: mixin/cropblock_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/CropBlockMixin.java"
+  - template: mixin/configuredfeature_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/ConfiguredFeatureMixin.java"
+  - template: mixin/ravager_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/RavagerMixin.java"
+  - template: mixin/farmblock_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/FarmBlockMixin.java"
+  - template: mixin/ghast_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/GhastMixin.java"
+  - template: mixin/entity_handle_status_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/EntityHandleStatusMixin.java"
+  - template: mixin/mob_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/MobMixin.java"
+  - template: mixin/lightning_bolt_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/LightningBoltMixin.java"
+  - template: mixin/entity_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/EntityMixin.java"
+  - template: mixin/server_level_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/ServerLevelMixin.java"
+  - template: mixin/totem_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/TotemMixin.java"
+  - template: mixin/level_explosion_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/LevelExplosionMixin.java"
+  - template: mixin/item_entity_pickup_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/ItemEntityPickupMixin.java"
+  - template: mixin/item_entity_drop_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/ItemEntityDropMixin.java"
+  - template: mixin/abstract_furnace_block_entity_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/AbstractFurnaceBlockEntityMixin.java"
+  - template: mixin/crafting_menu_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/CraftingMenuMixin.java"
+  - template: mixin/player_advancements_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/PlayerAdvancementsMixin.java"
+  - template: mixin/fishing_hook_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/FishingHookMixin.java"
+  - template: mixin/zombiesiege_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/VillageSiegeMixin.java"
+  - template: mixin/serverplayer_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/ServerPlayerMixin.java"
+  - template: mixin/flowingfluid_mixin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/FlowingFluidMixin.java"
+
+# Custom events
+  - template: event/livingentity_events.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/event/LivingEntityEvents.java"
+  - template: event/player_events.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/event/PlayerEvents.java"
+  - template: event/block_events.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/event/BlockEvents.java"
+  - template: event/item_events.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/event/ItemEvents.java"
+  - template: event/misc_events.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/event/MiscEvents.java"
+  - template: event/world_events.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/event/WorldEvents.java"
+
+java_models:
+  key: mojmap-1.20.x
+  compatible: [mojmap-1.17.x, mojmap-1.18.x, mojmap-1.19.x]
+  requested_key_words: [ModelPart, ~ModelRenderer]
+  # For Quilt with official Mojang mappings
+  use_mojang_naming: true
+
+sources_setup_tasks:
+  - task: copy_models
+    type: JAVA_viatemplate
+    cleanupBeforeCopy: true
+    template: javamodel.java.ftl
+    to: "@SRCROOT/@BASEPACKAGEPATH/client/model"
+  - task: copy_model_animations
+    type: JAVA_viatemplate
+    cleanupBeforeCopy: true
+    template: javaanimation.java.ftl
+    to: "@SRCROOT/@BASEPACKAGEPATH/client/model/animations"
+
+tags:
+  template: tags.json.ftl
+  name: "@RESROOT/data/@namespace/tags/@folder/@name.json"
+
+language_file:
+  format: json
+  root_folder: "@MODASSETSROOT/lang/"
+  langfile_name: "@langname.json"
+
+resources_setup_tasks:
+  - task: copy_file
+    from: "@MODASSETSROOT/textures/@modpicture.png"
+    to: "@RESROOT/logo.png"
+  - task: copy_models
+    type: OBJ_referencetextures
+    to: "@MODASSETSROOT/models/item"
+  - task: copy_models
+    type: JSON_noinlinetextures
+    to: "@MODASSETSROOT/models/custom"

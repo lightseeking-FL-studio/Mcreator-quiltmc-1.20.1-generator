@@ -1,0 +1,4 @@
+--username=Dev
+--assetIndex=5
+--accessToken=Fake
+--versionType=release

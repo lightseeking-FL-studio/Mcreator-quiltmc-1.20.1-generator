@@ -1,0 +1,1 @@
+/*@ItemStack*/(${input$entity} instanceof Container _container ? _container.getItem(${opt.toInt(input$slotid)}).copy() : ItemStack.EMPTY)

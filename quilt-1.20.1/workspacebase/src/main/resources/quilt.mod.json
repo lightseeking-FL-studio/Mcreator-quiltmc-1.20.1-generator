@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "quilt_loader": {
+    "group": "",
+    "id": "",
+    "version": "",
+    "intermediate_mappings": "net.fabricmc:intermediary",
+    "entrypoints": {
+      "init": [
+        ""
+      ],
+      "client_init": [
+        ""
+      ]
+    },
+    "depends": [
+      {
+        "id": "quilt_loader",
+        "versions": "*"
+      },
+      {
+        "id": "quilted_fabric_api",
+        "versions": "*"
+      },
+      {
+        "id": "minecraft",
+        "versions": "1.20.1"
+      }
+    ]
+  },
+  "minecraft": {
+    "environment": "*"
+  }
+}

@@ -1,0 +1,24 @@
+templates:
+  - template: enchantment.java.ftl
+    name: "@SRCROOT/@BASEPACKAGEPATH/enchantment/@NAMEEnchantment.java"
+
+global_templates:
+  - template: elementinits/enchantments.java.ftl
+    name: "@SRCROOT/@BASEPACKAGEPATH/init/@JavaModNameEnchantments.java"
+
+tags:
+  - tag: ENCHANTMENTS:minecraft:tradeable
+    condition: canVillagerTrade
+  - tag: ENCHANTMENTS:minecraft:curse
+    condition: isCurse
+  - tag: ENCHANTMENTS:minecraft:on_random_loot
+    condition: canGenerateInLootTables
+  - tag: ENCHANTMENTS:minecraft:treasure
+    condition: isTreasureEnchantment
+  - tag: ENCHANTMENTS:minecraft:non_treasure
+    condition: "!isTreasureEnchantment"
+localizationkeys:
+  - key: enchantment.@modid.@registryname
+    mapto: name
+
+field_exclusions: [anvilCost]

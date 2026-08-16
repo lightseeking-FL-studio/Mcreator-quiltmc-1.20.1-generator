@@ -1,0 +1,67 @@
+plugins {
+    id 'org.quiltmc.loom' version '1.7.4'
+}
+
+version = '1.0'
+group = 'com.yourname'
+base.archivesName = 'modid'
+
+repositories {
+    maven {
+        name = 'Quilt'
+        url = 'https://maven.quiltmc.org/repository/release'
+    }
+    maven {
+        name = 'Fabric'
+        url = 'https://maven.fabricmc.net/'
+    }
+    mavenCentral()
+}
+
+loom {
+    if (file("src/main/resources/${modid}.accesswidener").exists())
+        accessWidenerPath = file("src/main/resources/${modid}.accesswidener")
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${generator.getGeneratorMinecraftVersion()}"
+    mappings loom.officialMojangMappings()
+    modImplementation "org.quiltmc:quilt-loader:0.26.0"
+    modImplementation "org.quiltmc.quilted-fabric-api:quilted-fabric-api:7.7.0+${generator.getGeneratorBuildFileVersion()}-${generator.getGeneratorMinecraftVersion()}"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 17
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+// Mirror NBT structure templates from data/<namespace>/structures -> assets/<namespace>/structures
+// StructureTemplateManager (used by Structure Block + Jigsaw pools) loads templates via
+// ResourceManager which only scans assets/*/structures.  Vanilla and MCreator copy the
+// original NBT files into data/*/structures for worldgen configs, so we mirror at build time.
+processResources {
+    doLast {
+        def resourcesRoot = sourceSets.main.resources.srcDirs[0]
+        def dataRoot = file("${destinationDir}/data")
+        if (!dataRoot.exists()) return
+        dataRoot.eachDir { namespaceDir ->
+            def ns = namespaceDir.name
+            def dataStructures = new File(namespaceDir, "structures")
+            if (!dataStructures.exists()) return
+            def assetsStructures = file("${destinationDir}/assets/${ns}/structures")
+            copy {
+                from dataStructures
+                into assetsStructures
+                include '**/*.nbt'
+                includeEmptyDirs = false
+            }
+        }
+    }
+}
+
+apply from: 'mcreator.gradle'

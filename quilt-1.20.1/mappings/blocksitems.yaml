@@ -1,0 +1,15 @@
+Blocks.STONE:
+  - Blocks.STONE
+  - "stone"
+Blocks.DIRT:
+  - Blocks.DIRT
+  - "dirt"
+Blocks.GRASS_BLOCK:
+  - Blocks.GRASS_BLOCK
+  - "grass_block"
+Items.DIAMOND:
+  - Items.DIAMOND
+  - "diamond"
+Items.IRON_INGOT:
+  - Items.IRON_INGOT
+  - "iron_ingot"

@@ -1,0 +1,106 @@
+<#--
+ # MCreator (https://mcreator.net/)
+ # Copyright (C) 2012-2020, Pylo
+ # Copyright (C) 2020-2023, Pylo, opensource contributors
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # This program is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ #
+ # Additional permission for code generator templates (*.ftl files)
+ #
+ # As a special exception, you may create a larger work that contains part or
+ # all of the MCreator code generator templates (*.ftl files) and distribute
+ # that work under terms of your choice, so long as that work isn't itself a
+ # template for code generation. Alternatively, if you modify or redistribute
+ # the template itself, you may (at your option) remove this special exception,
+ # which will cause the template and the resulting code generator output files
+ # to be licensed under the GNU General Public License without this special
+ # exception.
+-->
+
+<#-- @formatter:off -->
+<#include "../procedures.java.ftl">
+
+package ${package}.network;
+
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.entity.player.Player;
+
+
+public record ${name}SlotMessage(int slotID, int x, int y, int z, int changeType, int meta) {
+
+	public static final ResourceLocation ID = new ResourceLocation("${modid}", "${registryname}_slot");
+
+	public ${name}SlotMessage(FriendlyByteBuf buffer) {
+		this(buffer.readInt(), buffer.readInt(), buffer.readInt(), buffer.readInt(), buffer.readInt(), buffer.readInt());
+	}
+
+	public static void buffer(${name}SlotMessage message, FriendlyByteBuf buffer) {
+		buffer.writeInt(message.slotID);
+		buffer.writeInt(message.x);
+		buffer.writeInt(message.y);
+		buffer.writeInt(message.z);
+		buffer.writeInt(message.changeType);
+		buffer.writeInt(message.meta);
+	}
+
+	public static void handler(${name}SlotMessage message, Supplier<ServerPlayer> context) {
+		System.out.println("[GUI] ${name}SlotMessage handler slot=" + message.slotID + " changeType=" + message.changeType + " meta=" + message.meta + " pos=" + message.x + "," + message.y + "," + message.z);
+		handleSlotAction(context.get(), message.slotID, message.changeType, message.meta, message.x, message.y, message.z);
+	}
+
+	public static void handleSlotAction(Player entity, int slot, int changeType, int meta, int x, int y, int z) {
+		Level world = entity.level();
+		System.out.println("[GUI] ${name}SlotMessage handleSlotAction slot=" + slot + " changeType=" + changeType + " meta=" + meta + " pos=" + x + "," + y + "," + z);
+
+		// security measure to prevent arbitrary chunk generation
+		if (!world.getChunkSource().hasChunk(entity.chunkPosition().x, entity.chunkPosition().z))
+			return;
+
+		<#list data.components as component>
+			<#if component.getClass().getSimpleName()?ends_with("Slot")>
+				<#if hasProcedure(component.onSlotChanged)>
+					if (slot == ${component.id} && changeType == 0) {
+						System.out.println("[GUI] ${name}SlotMessage executing onSlotChanged slot=${component.id}");
+						<@procedureOBJToCode component.onSlotChanged/>
+					}
+				</#if>
+				<#if hasProcedure(component.onTakenFromSlot)>
+					if (slot == ${component.id} && changeType == 1) {
+						System.out.println("[GUI] ${name}SlotMessage executing onTakenFromSlot slot=${component.id} meta=" + meta);
+						int amount = meta;
+						<@procedureOBJToCode component.onTakenFromSlot/>
+					}
+				</#if>
+				<#if hasProcedure(component.onStackTransfer)>
+					if (slot == ${component.id} && changeType == 2) {
+						System.out.println("[GUI] ${name}SlotMessage executing onStackTransfer slot=${component.id} meta=" + meta);
+						int amount = meta;
+						<@procedureOBJToCode component.onStackTransfer/>
+					}
+				</#if>
+			</#if>
+		</#list>
+	}
+
+	static {
+		${JavaModName}.addNetworkMessage(${name}SlotMessage.ID, ${name}SlotMessage.class, ${name}SlotMessage::buffer, ${name}SlotMessage::new, ${name}SlotMessage::handler);
+	}
+
+	public static void registerMessage() {
+		${JavaModName}.addNetworkMessage(${name}SlotMessage.ID, ${name}SlotMessage.class, ${name}SlotMessage::buffer, ${name}SlotMessage::new, ${name}SlotMessage::handler);
+	}
+}
+<#-- @formatter:on -->

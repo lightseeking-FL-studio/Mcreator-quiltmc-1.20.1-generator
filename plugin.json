@@ -1,0 +1,11 @@
+{
+  "id": "quiltmc-1.20.1",
+  "supportedversions": [2026001],
+  "weight": 0,
+  "info": {
+    "name": "QuiltMC 1.20.1 Generator (Lightseeking patched)",
+    "description": "Modified quiltmc-1.20.1 generator for MCreator 2026.1 by htqkeku @ Lightseeking(FL) Studio. Patches: dimension trigger (teleportTo + manual event), lightning dedup (UUID Set), AI attack goal 3-arg ctor fix, potion onStarted dual path + death onExpired, dispenser attempt pre-trigger, fuel burnSuccessCondition (furnace mixin HEAD hide / RETURN restore), procedure giveItem (Forge ItemHandlerHelper replacement), structure/feature imports + STRUCTURE_FEATURE registry + featuretype variable fix, generator.yaml structures_dir plural aligned with forge, build.gradle data→assets NBT mirror (grad processResources UTF-8 without BOM), armor description localizationkeys bodyName fix. Released under GPLv3, with MCreator template exception retained.",
+    "version": "1.1.0-demo",
+    "author": "htqkeku, Lightseeking(FL) Studio, Pylo, opensource contributors"
+  }
+}

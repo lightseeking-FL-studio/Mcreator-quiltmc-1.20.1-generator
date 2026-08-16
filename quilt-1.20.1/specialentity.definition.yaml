@@ -1,0 +1,26 @@
+global_templates:
+  - template: specialentity/specialentity.java.ftl
+    name: "@SRCROOT/@BASEPACKAGEPATH/entity/@JavaModNameSpecialEntity.java"
+  - template: specialentity/boat.java.ftl
+    name: "@SRCROOT/@BASEPACKAGEPATH/entity/@JavaModNameBoat.java"
+  - template: specialentity/chest_boat.java.ftl
+    name: "@SRCROOT/@BASEPACKAGEPATH/entity/@JavaModNameChestBoat.java"
+  - template: specialentity/boat_item.java.ftl
+    name: "@SRCROOT/@BASEPACKAGEPATH/item/@JavaModNameBoatItem.java"
+  - template: specialentity/boat_renderer.java.ftl
+    name: "@SRCROOT/@BASEPACKAGEPATH/client/renderer/entity/@JavaModNameBoatRenderer.java"
+  - template: specialentity/boat_renderer_mixin.java.ftl
+    name: "@SRCROOT/@BASEPACKAGEPATH/mixin/@JavaModNameBoatRendererMixin.java"
+
+templates:
+  - template: json/special_entity_item.json.ftl
+    writer: json
+    name: "@MODASSETSROOT/models/item/@registryname.json"
+  - template: json/model_item.json.ftl
+    writer: json
+    name: "@MODASSETSROOT/items/@registryname.json"
+localizationkeys:
+  - key: entity.@modid.@registryname
+    mapto: name
+  - key: item.@modid.@registryname
+    mapto: name

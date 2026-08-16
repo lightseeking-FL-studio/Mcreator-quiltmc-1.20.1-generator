@@ -1,0 +1,45 @@
+templates:
+  - template: armor.java.ftl
+    name: "@SRCROOT/@BASEPACKAGEPATH/item/@NAMEItem.java"
+  - template: json/armor_model_helmet.json.ftl
+    writer: json
+    condition: enableHelmet
+    name: "@MODASSETSROOT/models/item/@registryname_helmet.json"
+  - template: json/armor_model_chestplate.json.ftl
+    writer: json
+    condition: enableBody
+    name: "@MODASSETSROOT/models/item/@registryname_chestplate.json"
+  - template: json/armor_model_leggings.json.ftl
+    writer: json
+    condition: enableLeggings
+    name: "@MODASSETSROOT/models/item/@registryname_leggings.json"
+  - template: json/armor_model_boots.json.ftl
+    writer: json
+    condition: enableBoots
+    name: "@MODASSETSROOT/models/item/@registryname_boots.json"
+  - template: json/armor_trim.json.ftl
+    writer: json
+    condition: hasTrim
+    name: "@MODDATAROOT/trim_pattern/@registryname.json"
+
+localizationkeys:
+  - key: item.@modid.@registryname_helmet
+    mapto: helmetName
+    condition: enableHelmet
+  - key: item.@modid.@registryname_chestplate
+    mapto: bodyName
+    condition: enableBody
+  - key: item.@modid.@registryname_leggings
+    mapto: leggingsName
+    condition: enableLeggings
+  - key: item.@modid.@registryname_boots
+    mapto: bootsName
+    condition: enableBoots
+  - fromlist: data.getHelmetFixedSpecialInformation()
+    key: item.@modid.@registryname_helmet.description_@item_index
+  - fromlist: data.getBodyFixedSpecialInformation()
+    key: item.@modid.@registryname_chestplate.description_@item_index
+  - fromlist: data.getLeggingsFixedSpecialInformation()
+    key: item.@modid.@registryname_leggings.description_@item_index
+  - fromlist: data.getBootsFixedSpecialInformation()
+    key: item.@modid.@registryname_boots.description_@item_index

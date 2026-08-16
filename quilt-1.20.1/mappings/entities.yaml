@@ -1,0 +1,6 @@
+EntityTypes.ZOMBIE:
+  - EntityTypes.ZOMBIE
+EntityTypes.SKELETON:
+  - EntityTypes.SKELETON
+EntityTypes.PLAYER:
+  - EntityTypes.PLAYER

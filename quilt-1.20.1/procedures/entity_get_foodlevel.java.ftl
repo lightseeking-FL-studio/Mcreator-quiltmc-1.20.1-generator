@@ -1,0 +1,1 @@
+return ${input$entity} instanceof ServerPlayer _serverPlayer ? _serverPlayer.getFoodData().getFoodLevel() : 0;

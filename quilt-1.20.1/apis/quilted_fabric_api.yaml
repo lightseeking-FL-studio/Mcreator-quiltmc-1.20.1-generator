@@ -1,0 +1,13 @@
+name: Quilted Fabric API
+
+quilt-1.20.1:
+  required_when_enabled: false
+  gradle: |
+    repositories {
+        mavenCentral()
+        maven { url = "https://maven.quiltmc.org/repository/release" }
+        maven { url = "https://maven.fabricmc.net" }
+    }
+    dependencies {
+        implementation include("org.quiltmc.quilted-fabric-api:quilted-fabric-api:${project.quilted_fabric_api_version}")
+    }

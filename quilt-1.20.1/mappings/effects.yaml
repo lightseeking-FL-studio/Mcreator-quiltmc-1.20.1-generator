@@ -1,0 +1,6 @@
+MobEffects.MOVEMENT_SPEED:
+  - MobEffects.MOVEMENT_SPEED
+MobEffects.HASTE:
+  - MobEffects.HASTE
+MobEffects.STRENGTH:
+  - MobEffects.STRENGTH

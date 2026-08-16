@@ -1,0 +1,4 @@
+ParticleTypes.SMOKE:
+  - ParticleTypes.SMOKE
+ParticleTypes.FLAME:
+  - ParticleTypes.FLAME

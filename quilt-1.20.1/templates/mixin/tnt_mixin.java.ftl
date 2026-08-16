@@ -1,0 +1,1 @@
+<#-- TNT grief detection is not available for 1.20.1 Quilt due to class name mismatch: PrimedTnt/TNTPrimed unresolved in mappings. -->

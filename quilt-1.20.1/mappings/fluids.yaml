@@ -1,0 +1,4 @@
+Fluids.WATER:
+  - Fluids.WATER
+Fluids.LAVA:
+  - Fluids.LAVA

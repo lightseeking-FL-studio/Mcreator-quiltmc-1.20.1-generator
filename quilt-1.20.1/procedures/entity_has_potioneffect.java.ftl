@@ -1,0 +1,1 @@
+return ${input$entity} instanceof LivingEntity _livingEntity ? _livingEntity.hasEffect(${input$potion}) : false;
